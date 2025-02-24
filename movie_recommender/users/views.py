@@ -71,7 +71,7 @@ class FavoriteMoviesView(APIView):
 
         try:
             client = TMDBClient()
-            client.get_movie_details(movie_id)
+            movie_details = client.get_movie_details(movie_id)
         except Exception as e:
             return Response(
                 {"error": f"Invalid movie ID: {str(e)}"},
@@ -85,6 +85,13 @@ class FavoriteMoviesView(APIView):
             )
 
         favorite = FavoriteMovie.objects.create(
-            user=request.user, movie_id=movie_id)
+            user=request.user,
+            movie_id=movie_id,
+            title=movie_details.get('title'),
+            overview=movie_details.get('overview'),
+            release_date=movie_details.get('release_date'),
+            backdrop_path=movie_details.get('backdrop_path'),
+            poster_path=movie_details.get('poster_path')
+        )
         serializer = FavoriteMovieSerializer(favorite)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
