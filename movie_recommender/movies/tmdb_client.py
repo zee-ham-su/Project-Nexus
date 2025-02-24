@@ -21,3 +21,10 @@ class TMDBClient:
         response = requests.get(url, params=params)
         response.raise_for_status()
         return response.json().get('results', [])
+
+    def get_movie_details(self, movie_id):
+        url = f"{self.BASE_URL}/movie/{movie_id}"
+        params = {'api_key': self.api_key}
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        return response.json()
