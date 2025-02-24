@@ -8,7 +8,7 @@ class FavoriteMovie(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=255)
     overview = models.TextField()
-    release_date = models.DateField()
+    release_date = models.DateField(default='1970-01-01')
     backdrop_path = models.CharField(max_length=255, null=True, blank=True)
     poster_path = models.CharField(max_length=255, null=True, blank=True)
 

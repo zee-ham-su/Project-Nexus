@@ -1,6 +1,11 @@
 {
     "cSpell.words": [
+        "djangorestframework",
         "dotenv",
+        "moviebuff",
+        "movieenthusiast",
+        "securepassword",
+        "themoviedb",
         "tmdb"
     ]
 }

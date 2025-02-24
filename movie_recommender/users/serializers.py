@@ -3,6 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from movies.tmdb_client import TMDBClient
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -48,7 +49,33 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class FavoriteMovieSerializer(serializers.ModelSerializer):
+    title = serializers.SerializerMethodField()
+    poster_path = serializers.SerializerMethodField()
+    overview = serializers.SerializerMethodField()
+    release_date = serializers.SerializerMethodField()
+
     class Meta:
         model = FavoriteMovie
-        fields = ('movie_id', 'created_at')
+        fields = ('movie_id', 'created_at', 'title',
+                  'overview', 'release_date', 'poster_path')
         read_only_fields = ('created_at',)
+
+    def get_title(self, obj):
+        client = TMDBClient()
+        details = client.get_movie_details(obj.movie_id)
+        return details.get('title')
+
+    def get_poster_path(self, obj):
+        client = TMDBClient()
+        details = client.get_movie_details(obj.movie_id)
+        return details.get('poster_path')
+
+    def get_overview(self, obj):
+        client = TMDBClient()
+        details = client.get_movie_details(obj.movie_id)
+        return details.get('overview')
+
+    def get_release_date(self, obj):
+        client = TMDBClient()
+        details = client.get_movie_details(obj.movie_id)
+        return details.get('release_date')
