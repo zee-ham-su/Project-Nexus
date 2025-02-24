@@ -10,9 +10,16 @@ from .serializers import (
     FavoriteMovieSerializer
 )
 from movies.tmdb_client import TMDBClient
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 class UserRegistrationView(APIView):
+
+    @swagger_auto_schema(
+        request_body=UserRegistrationSerializer,
+        responses={201: "User registered successfully", 400: "Invalid data"}
+    )
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -25,17 +32,40 @@ class UserRegistrationView(APIView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
+    @swagger_auto_schema(
+        request_body=CustomTokenObtainPairSerializer,
+        responses={
+            200: CustomTokenObtainPairSerializer,
+            401: 'Invalid credentials'
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 
 class FavoriteMoviesView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        responses={200: FavoriteMovieSerializer(many=True)}
+    )
     def get(self, request):
         favorites = FavoriteMovie.objects.filter(user=request.user)
         serializer = FavoriteMovieSerializer(favorites, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'movie_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='ID of the movie')
+            }
+        ),
+        responses={
+            201: FavoriteMovieSerializer,
+            400: "Invalid movie ID or Movie already in favorites"
+        }
+    )
     def post(self, request):
         movie_id = request.data.get('movie_id')
 
