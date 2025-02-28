@@ -77,6 +77,7 @@ A high-performance backend for a movie recommendation application featuring user
     DB_PORT=5432
     TMDB_API_KEY=your-tmdb-api-key
     REDIS_URL=redis://localhost:6379/0
+    REDIS_PORT=6379
     ```
 
 4. **Database Setup**
