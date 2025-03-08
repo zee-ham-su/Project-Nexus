@@ -108,7 +108,7 @@ else:
         }
     }
 
-
+print("DATABASE_URL:", os.getenv('DATABASE_URL'))
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',

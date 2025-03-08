@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from movies.views import health_check
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -13,6 +14,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path("", health_check, name="home"),
     path('admin/', admin.site.urls),
     path('api/', include('movies.urls')),
     path('api/auth/', include('users.urls')),
