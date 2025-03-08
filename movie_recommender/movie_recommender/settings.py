@@ -32,7 +32,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-+uje&x7c12$$)y8d=!m33hi=ba
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 # Allow all host headers for now, this should be configured in production
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,localhost:3000,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,project-nexus-l0hf.onrender.com').split(',')
+
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000"
