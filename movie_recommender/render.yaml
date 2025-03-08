@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: movie-recommender
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn movie_recommender.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: ALLOWED_HOSTS
+        sync: false
