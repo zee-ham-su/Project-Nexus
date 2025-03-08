@@ -14,7 +14,7 @@ A high-performance backend for a movie recommendation application featuring user
   - User registration/login
   - Favorite movie storage
 - **Performance**
-  - Redis caching (6-hour TTL for movie data)
+  - Redis caching (1-hour TTL for movie data)
   - Optimized database queries
 
 ### Technical Features
@@ -161,7 +161,8 @@ Access interactive documentation at:
 | Variable      | Description            | Example                      |
 |---------------|------------------------|------------------------------|
 | TMDB_API_KEY  | TMDb API key           | abcdef123456                 |
-| REDIS_URL     | Redis connection URL   | redis://localhost:6379/0     |
+| REDIS_HOST    | Redis host address      | localhost                    |
+| REDIS_PORT    | Redis port number       | 6379                        |
 | DB_*          | PostgreSQL credentials | (See .env example)           |
 
 📜 License
