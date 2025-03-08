@@ -24,7 +24,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-+uje&x7c12$$)y8d=!m33hi=ba
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 # Allow all host headers for now, this should be configured in production
-ALLOWED_HOSTS = ['*']
+
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '.up.railway.app,localhost,127.0.0.1').split(',')
+
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000"
@@ -89,6 +91,7 @@ if os.getenv('DATABASE_URL'):
     DATABASES = {
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL'),
+            ssl_require=True,
             conn_max_age=600
         )
     }
@@ -118,7 +121,8 @@ SIMPLE_JWT = {
 }
 
 # Check for REDIS_URL first (Railway provides this)
-if os.getenv('REDIS_URL'):
+if not os.getenv('REDIS_URL'):
+    logging.warning('REDIS_URL not found, falling back to individual environment variables')
     CACHES = {
         'default': {
             'BACKEND': 'django_redis.cache.RedisCache',
@@ -186,9 +190,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
