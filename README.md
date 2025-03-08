@@ -165,6 +165,14 @@ Access interactive documentation at:
 | REDIS_PORT    | Redis port number       | 6379                        |
 | DB_*          | PostgreSQL credentials | (See .env example)           |
 
+## 📚 Additional Documentation
+
+For more detailed documentation, please refer to the `docs` directory:
+
+- [Database Schema](movie_recommender/docs/Database_schema.md)
+- [ERD Diagram Analysis](movie_recommender/docs/ERD_Diagram_Analysis.md)
+- [Redis Setup](movie_recommender/docs/REDIS_SETUP.md)
+
 📜 License
 [MIT License](LICENSE) - see LICENSE for details
 

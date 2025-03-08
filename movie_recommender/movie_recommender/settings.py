@@ -26,7 +26,7 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 # Allow all host headers for now, this should be configured in production
 
 # Allow all host headers for now, this should be configured in production
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,project-nexus-ba8k.onrender.com').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
