@@ -92,7 +92,7 @@ A high-performance backend for a movie recommendation application featuring user
 
 📚 API Documentation
 Access interactive documentation at:
-<http://localhost:8000/api/docs/>
+<https://flick-nexus-finder-7b5f0047c57a.herokuapp.com/api/docs/>
 
 ## Key Endpoints
 
