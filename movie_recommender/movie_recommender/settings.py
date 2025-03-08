@@ -25,13 +25,14 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Allow all host headers for now, this should be configured in production
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '.up.railway.app,localhost,127.0.0.1').split(',')
-
+# Allow all host headers for now, this should be configured in production
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,project-nexus-ba8k.onrender.com').split(',')
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "https://project-nexus-ba8k.onrender.com",
 ]
-
 # Application definition
 
 INSTALLED_APPS = [
