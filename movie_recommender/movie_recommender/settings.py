@@ -21,18 +21,6 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-logger = logging.getLogger(__name__)
-
-class LogRequestsMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        logger.info(f"Request: {request.method} {request.path}")
-        response = self.get_response(request)
-        logger.info(f"Response: {response.status_code}")
-        return response
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
