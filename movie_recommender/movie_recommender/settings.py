@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-+uje&x7c12$$)y8d=!m33hi=baj_h+!u&(x1r#b#k&x_iy*5z4')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Allow all host headers for now, this should be configured in production
 
@@ -121,8 +121,7 @@ SIMPLE_JWT = {
 }
 
 # Check for REDIS_URL first (Railway provides this)
-if not os.getenv('REDIS_URL'):
-    logging.warning('REDIS_URL not found, falling back to individual environment variables')
+if os.getenv('REDIS_URL'):
     CACHES = {
         'default': {
             'BACKEND': 'django_redis.cache.RedisCache',
@@ -134,7 +133,7 @@ if not os.getenv('REDIS_URL'):
         }
     }
 else:
-    # Fall back to individual environment variables for local development
+    logging.warning('REDIS_URL not found, falling back to individual environment variables')
     CACHES = {
         'default': {
             'BACKEND': 'django_redis.cache.RedisCache',
@@ -145,6 +144,7 @@ else:
             'KEY_PREFIX': 'movie_rec'
         }
     }
+
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
