@@ -121,11 +121,11 @@ SIMPLE_JWT = {
 }
 
 # Check for REDIS_URL first (Railway provides this)
-if os.getenv('REDIS_URL'):
+if os.getenv('UPSTASH_REDIS_REST_URL'):
     CACHES = {
         'default': {
             'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': os.getenv('REDIS_URL'),
+            'LOCATION': os.getenv('UPSTASH_REDIS_REST_URL'),
             'OPTIONS': {
                 'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             },
