@@ -4,8 +4,16 @@ from rest_framework import status
 from django.core.cache import cache
 from .tmdb_client import TMDBClient
 import logging
+from django.http import JsonResponse
 
 logger = logging.getLogger(__name__)
+
+
+
+
+
+def health_check(request):
+    return JsonResponse({"status": "ok", "message": "Welcome to the Movie Recommender API!"})
 
 
 class TrendingMoviesView(APIView):
