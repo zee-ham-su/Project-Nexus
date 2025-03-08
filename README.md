@@ -65,22 +65,15 @@ A high-performance backend for a movie recommendation application featuring user
 
 3. **Configure Environment**
 
-    - Create  file.env:
-
-    ```bash
-    SECRET_KEY=your-django-secret-key
-    DEBUG=True
-    DB_NAME=movie_db
-    DB_USER=movie_user
-    DB_PASSWORD=securepassword123
-    DB_HOST=localhost
-    DB_PORT=5432
-    TMDB_API_KEY=your-tmdb-api-key
-    REDIS_URL=redis://localhost:6379/0
-    REDIS_PORT=6379
-    ```
-
-4. **Database Setup**
+  ## Environment Setup
+      Copy the example environment file:
+      - Create  file.env:
+   ```bash
+   - Create  file.env:
+   cp .env.example .env
+    
+  ```
+4. **Run Migrations**
 
     ```bash
     python manage.py makemigrations
