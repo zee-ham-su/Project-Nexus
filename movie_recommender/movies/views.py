@@ -5,7 +5,6 @@ from .tmdb_client import TMDBClient
 import logging
 from django.http import JsonResponse, HttpRequest
 import os
-import requests
 from typing import Any, Dict, Optional
 from upstash_redis import Redis
 from drf_yasg.utils import swagger_auto_schema
@@ -86,28 +85,6 @@ class MovieDetailView(APIView):
         except Exception as e:
             logger.error(f"Error fetching details for movie {movie_id}: {str(e)}")
             return Response({'error': str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
-
-class TMDBClient:
-    def __init__(self):
-        self.api_key = os.getenv('TMDB_API_KEY')
-        self.base_url = 'https://api.themoviedb.org/3'
-
-    def search_movies(self, query: str, year: Optional[str] = None, genre: Optional[str] = None, page: int = 1, page_size: int = 20) -> Dict:
-        params = {
-            'query': query,
-            'api_key': self.api_key,
-            'page': page,
-            'page_size': page_size
-        }
-        if year:
-            params['year'] = year
-        if genre:
-            params['with_genres'] = genre
-
-        response = requests.get(f'{self.base_url}/search/movie', params=params)
-        response.raise_for_status()
-        return response.json()
-
 
 class SearchMoviesView(APIView):
     @swagger_auto_schema(
