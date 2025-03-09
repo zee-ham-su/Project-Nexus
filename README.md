@@ -103,11 +103,13 @@ Access interactive documentation at:
 | /api/auth/register/                     | POST   | User registration             | No            |
 | /api/auth/login/                        | POST   | Get JWT access & refresh tokens | No          |
 | /api/auth/token/refresh/                | POST   | Refresh access token          | No            |
-| /api/auth/favorites/                    | GET    | Get user's favorite movies     | Yes           |
-| /api/auth/favorites/                    | POST   | Add movie to favorites         | Yes           |
-| /api/auth/favorites/<int:id>/           | DELETE | Remove a movie from favorites  | Yes           |
-| /api/movies/trending/                   | GET    | Get trending movies (weekly)   | No            |
+| /api/auth/favorites/                    | GET    | Get user's favorite movies     | Yes          |
+| /api/auth/favorites/                    | POST   | Add movie to favorites         | Yes          |
+| /api/auth/favorites/<int:id>/           | DELETE | Remove a movie from favorites  | Yes          |
+| /api/movies/trending/                   | GET    | Get trending movies (weekly)   | No           |
 | /api/movies/{movie_id}/recommendations/ | GET    | Get recommendations for a movie | No          |
+| /api/movies/{movie_id}/                 | GET    | Get details of a movie by ID   | No           |
+| /api/movies/search/                     | GET    | Search for movies              | No           |
 
 ...
 
@@ -159,6 +161,20 @@ Access interactive documentation at:
       -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
       -H "Content-Type: application/json" \
       -d '{"movie_id": 550}'  # Fight Club example
+    ```
+
+6. **Search for Movies**
+
+    ```bash
+    curl -X GET "http://localhost:8000/api/movies/search/?query=Inception&year=2010&genre=Action&page=1&page_size=20" \
+      -H "Content-Type: application/json"
+    ```
+
+7. **Get Movie Details by ID**
+
+    ```bash
+    curl -X GET "http://localhost:8000/api/movies/550/" \
+      -H "Content-Type: application/json"
     ```
 
 ## 🌐 Environment Variables

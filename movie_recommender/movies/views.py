@@ -3,11 +3,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from .tmdb_client import TMDBClient
 import logging
-from django.http import JsonResponse, HttpRequest, HttpResponse
+from django.http import JsonResponse, HttpRequest
 import os
 import requests
 from typing import Any, Dict, Optional
 from upstash_redis import Redis
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 logger = logging.getLogger(__name__)
 
@@ -65,4 +67,81 @@ class RecommendationsView(APIView):
             return Response(recommendations)
         except Exception as e:
             logger.error(f"Error fetching recommendations for movie {movie_id}: {str(e)}")
+            return Response({'error': str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class MovieDetailView(APIView):
+    def get(self, request: HttpRequest, movie_id: int) -> Response:
+        try:
+            cache_key = f'movie_{movie_id}'
+            cached = redis_get(cache_key)
+            if cached:
+                logger.info(f"Returning cached details for movie {movie_id}")
+                return Response(eval(cached))  # Convert string back to Python object
+
+            client = TMDBClient()
+            movie_details = client.get_movie_details(movie_id)
+            redis_set(cache_key, str(movie_details))  # Store as string
+            logger.info(f"Fetched and cached details for movie {movie_id}")
+            return Response(movie_details)
+        except Exception as e:
+            logger.error(f"Error fetching details for movie {movie_id}: {str(e)}")
+            return Response({'error': str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class TMDBClient:
+    def __init__(self):
+        self.api_key = os.getenv('TMDB_API_KEY')
+        self.base_url = 'https://api.themoviedb.org/3'
+
+    def search_movies(self, query: str, year: Optional[str] = None, genre: Optional[str] = None, page: int = 1, page_size: int = 20) -> Dict:
+        params = {
+            'query': query,
+            'api_key': self.api_key,
+            'page': page,
+            'page_size': page_size
+        }
+        if year:
+            params['year'] = year
+        if genre:
+            params['with_genres'] = genre
+
+        response = requests.get(f'{self.base_url}/search/movie', params=params)
+        response.raise_for_status()
+        return response.json()
+
+
+class SearchMoviesView(APIView):
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('query', openapi.IN_QUERY, description="Search query", type=openapi.TYPE_STRING, required=True),
+            openapi.Parameter('year', openapi.IN_QUERY, description="Filter by year", type=openapi.TYPE_STRING, required=False),
+            openapi.Parameter('genre', openapi.IN_QUERY, description="Filter by genre", type=openapi.TYPE_STRING, required=False),
+            openapi.Parameter('page', openapi.IN_QUERY, description="Page number", type=openapi.TYPE_INTEGER, required=False),
+            openapi.Parameter('page_size', openapi.IN_QUERY, description="Number of results per page", type=openapi.TYPE_INTEGER, required=False),
+        ],
+        responses={200: 'Search results'}
+    )
+    def get(self, request: HttpRequest) -> Response:
+        query = request.query_params.get('query')
+        year = request.query_params.get('year')
+        genre = request.query_params.get('genre')
+        page = request.query_params.get('page', 1)
+        page_size = request.query_params.get('page_size', 20)
+
+        if not query:
+            return Response({'error': 'Query parameter is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            cache_key = f'search_{query}_{year}_{genre}_{page}_{page_size}'
+            cached = redis_get(cache_key)
+            if cached:
+                logger.info(f"Returning cached search results for query: {query}, year: {year}, genre: {genre}, page: {page}, page_size: {page_size}")
+                return Response(eval(cached))  # Convert string back to Python object
+
+            client = TMDBClient()
+            search_results = client.search_movies(query, year=year, genre=genre, page=page, page_size=page_size)
+            redis_set(cache_key, str(search_results))  # Store as string
+            logger.info(f"Fetched and cached search results for query: {query}, year: {year}, genre: {genre}, page: {page}, page_size: {page_size}")
+            return Response(search_results)
+        except Exception as e:
+            logger.error(f"Error fetching search results for query {query}, year {year}, genre {genre}, page {page}, page_size {page_size}: {str(e)}")
             return Response({'error': str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
