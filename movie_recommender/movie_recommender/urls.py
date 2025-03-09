@@ -16,8 +16,8 @@ schema_view = get_schema_view(
 urlpatterns = [
     path("", health_check, name="home"),
     path('admin/', admin.site.urls),
-    path('api/', include('movies.urls')),
-    path('api/auth/', include('users.urls')),
+    path('api/v1/', include('movies.urls')),
+    path('api/v1/auth/', include('users.urls')),
     path('api/docs/', schema_view.with_ui('swagger',
          cache_timeout=0), name='schema-swagger-ui'),
     path('api/redoc/', schema_view.with_ui('redoc',

@@ -34,12 +34,13 @@ def redis_get(key: str) -> Optional[str]:
     return response
 
 class TrendingMoviesView(APIView):
+    @swagger_auto_schema(tags=["Movies"])
     def get(self, request: HttpRequest) -> Response:
         try:
             cached = redis_get('trending_movies')
             if cached:
                 logger.info("Returning cached trending movies")
-                return Response(eval(cached))  # Convert string back to Python object
+                return Response(eval(cached))  # Convert string back to object
 
             client = TMDBClient()
             movies = client.get_trending()
@@ -51,6 +52,7 @@ class TrendingMoviesView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 class RecommendationsView(APIView):
+    @swagger_auto_schema(tags=["Movies"])
     def get(self, request: HttpRequest, movie_id: int) -> Response:
         try:
             cache_key = f'recommendations_{movie_id}'
@@ -69,6 +71,7 @@ class RecommendationsView(APIView):
             return Response({'error': str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 class MovieDetailView(APIView):
+    @swagger_auto_schema(tags=["Movies"])
     def get(self, request: HttpRequest, movie_id: int) -> Response:
         try:
             cache_key = f'movie_{movie_id}'
@@ -88,6 +91,7 @@ class MovieDetailView(APIView):
 
 class SearchMoviesView(APIView):
     @swagger_auto_schema(
+        tags=["Movies"],
         manual_parameters=[
             openapi.Parameter('query', openapi.IN_QUERY, description="Search query", type=openapi.TYPE_STRING, required=True),
             openapi.Parameter('year', openapi.IN_QUERY, description="Filter by year", type=openapi.TYPE_STRING, required=False),
