@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import FavoriteMovie
 from .serializers import (
     UserRegistrationSerializer,
@@ -17,6 +17,7 @@ from drf_yasg import openapi
 class UserRegistrationView(APIView):
 
     @swagger_auto_schema(
+        tags=["Authentication"],
         request_body=UserRegistrationSerializer,
         responses={201: "User registered successfully", 400: "Invalid data"}
     )
@@ -33,6 +34,7 @@ class UserRegistrationView(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     @swagger_auto_schema(
+        tags=["Authentication"],
         request_body=CustomTokenObtainPairSerializer,
         responses={
             200: CustomTokenObtainPairSerializer,
@@ -47,6 +49,7 @@ class FavoriteMoviesView(APIView):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
+        tags=["Favorite Movies"],
         responses={200: FavoriteMovieSerializer(many=True)}
     )
     def get(self, request):
@@ -55,6 +58,7 @@ class FavoriteMoviesView(APIView):
         return Response(serializer.data)
 
     @swagger_auto_schema(
+        tags=["Favorite Movies"],
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
@@ -95,3 +99,28 @@ class FavoriteMoviesView(APIView):
         )
         serializer = FavoriteMovieSerializer(favorite)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class FavoriteMovieDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        tags=["Favorite Movies"],
+        responses={
+            204: "Movie removed from favorites",
+            404: "Favorite movie not found"
+        }
+    )
+    def delete(self, request, id):
+        try:
+            favorite = FavoriteMovie.objects.get(user=request.user, movie_id=id)
+            favorite.delete()
+            return Response(
+                {"message": "Movie removed from favorites"},
+                status=status.HTTP_204_NO_CONTENT
+            )
+        except FavoriteMovie.DoesNotExist:
+            return Response(
+                {"error": "Favorite movie not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )

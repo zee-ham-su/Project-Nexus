@@ -42,7 +42,7 @@ A high-performance backend for a movie recommendation application featuring user
 
 - Python 3.9+
 - PostgreSQL
-- Redis
+- Redis (free at  [Upstash Documentation](https://docs.upstash.com/))
 - TMDb API key (free at [themoviedb.org](https://www.themoviedb.org/settings/api))
 
 ### Setup
@@ -94,6 +94,8 @@ A high-performance backend for a movie recommendation application featuring user
 Access interactive documentation at:
 <https://flick-nexus-finder-7b5f0047c57a.herokuapp.com/api/docs/>
 
+...
+
 ## Key Endpoints
 
 | Endpoint                                | Method | Description                   | Auth Required |
@@ -103,8 +105,11 @@ Access interactive documentation at:
 | /api/auth/token/refresh/                | POST   | Refresh access token          | No            |
 | /api/auth/favorites/                    | GET    | Get user's favorite movies     | Yes           |
 | /api/auth/favorites/                    | POST   | Add movie to favorites         | Yes           |
+| /api/auth/favorites/<int:id>/           | DELETE | Remove a movie from favorites  | Yes           |
 | /api/movies/trending/                   | GET    | Get trending movies (weekly)   | No            |
 | /api/movies/{movie_id}/recommendations/ | GET    | Get recommendations for a movie | No          |
+
+...
 
 🔍 Testing Endpoints with Swagger
 
