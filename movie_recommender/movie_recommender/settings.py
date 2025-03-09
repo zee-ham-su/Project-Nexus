@@ -31,7 +31,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:8000",
-    "https://project-nexus-ba8k.onrender.com",
+    "https://sankofa-flix.vercel.app",
 ]
 # Application definition
 
