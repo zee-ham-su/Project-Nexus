@@ -26,13 +26,22 @@ class UserRegistrationView(APIView):
         if serializer.is_valid():
             user = serializer.save()
             return Response(
-                {"message": "User registered successfully"},
+                {
+                    "message": "User registered successfully",
+                    "user": {
+                        "id": user.id,
+                        "username": user.username,
+                        "email": user.email
+                    }
+                },
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
     @swagger_auto_schema(
         tags=["Authentication"],
         request_body=CustomTokenObtainPairSerializer,
@@ -55,7 +64,16 @@ class FavoriteMoviesView(APIView):
     def get(self, request):
         favorites = FavoriteMovie.objects.filter(user=request.user)
         serializer = FavoriteMovieSerializer(favorites, many=True)
-        return Response(serializer.data)
+        return Response(
+            {
+                "user": {
+                    "id": request.user.id,
+                    "username": request.user.username,
+                    "email": request.user.email
+                },
+                "favorite_movies": serializer.data
+            }
+        )
 
     @swagger_auto_schema(
         tags=["Favorite Movies"],
@@ -98,7 +116,17 @@ class FavoriteMoviesView(APIView):
             poster_path=movie_details.get('poster_path')
         )
         serializer = FavoriteMovieSerializer(favorite)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "user": {
+                    "id": request.user.id,
+                    "username": request.user.username,
+                    "email": request.user.email
+                },
+                "favorite_movie": serializer.data
+            },
+            status=status.HTTP_201_CREATED
+        )
 
 
 class FavoriteMovieDetailView(APIView):
@@ -117,7 +145,14 @@ class FavoriteMovieDetailView(APIView):
                 user=request.user, movie_id=id)
             favorite.delete()
             return Response(
-                {"message": "Movie removed from favorites"},
+                {
+                    "message": "Movie removed from favorites",
+                    "user": {
+                        "id": request.user.id,
+                        "username": request.user.username,
+                        "email": request.user.email
+                    }
+                },
                 status=status.HTTP_204_NO_CONTENT
             )
         except FavoriteMovie.DoesNotExist:

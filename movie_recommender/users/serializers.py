@@ -43,8 +43,12 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):
         data = super().validate(attrs)
-        data['user_id'] = self.user.id
-        data['username'] = self.user.username
+        data['user'] = {
+            'id': self.user.id,
+            'username': self.user.username,
+            'email': self.user.email,
+            'favourite_count': FavoriteMovie.objects.filter(user=self.user).count()
+        }
         return data
 
 
