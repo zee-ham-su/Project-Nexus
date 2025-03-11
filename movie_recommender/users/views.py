@@ -15,7 +15,6 @@ from drf_yasg import openapi
 
 
 class UserRegistrationView(APIView):
-
     @swagger_auto_schema(
         tags=["Authentication"],
         request_body=UserRegistrationSerializer,
@@ -25,14 +24,21 @@ class UserRegistrationView(APIView):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            return Response(
-                {"message": "User registered successfully"},
-                status=status.HTTP_201_CREATED
-            )
+            return Response({
+                "message": "User registered successfully",
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "date_joined": user.date_joined
+                }
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
     @swagger_auto_schema(
         tags=["Authentication"],
         request_body=CustomTokenObtainPairSerializer,
@@ -42,7 +48,17 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         }
     )
     def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == 200:
+            user = request.user
+            response.data.update({
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email
+                }
+            })
+        return response
 
 
 class FavoriteMoviesView(APIView):
@@ -55,7 +71,14 @@ class FavoriteMoviesView(APIView):
     def get(self, request):
         favorites = FavoriteMovie.objects.filter(user=request.user)
         serializer = FavoriteMovieSerializer(favorites, many=True)
-        return Response(serializer.data)
+        return Response({
+            "user": {
+                "id": request.user.id,
+                "username": request.user.username
+            },
+            "favorites_count": favorites.count(),
+            "favorites": serializer.data
+        })
 
     @swagger_auto_schema(
         tags=["Favorite Movies"],
@@ -113,7 +136,8 @@ class FavoriteMovieDetailView(APIView):
     )
     def delete(self, request, id):
         try:
-            favorite = FavoriteMovie.objects.get(user=request.user, movie_id=id)
+            favorite = FavoriteMovie.objects.get(
+                user=request.user, movie_id=id)
             favorite.delete()
             return Response(
                 {"message": "Movie removed from favorites"},
